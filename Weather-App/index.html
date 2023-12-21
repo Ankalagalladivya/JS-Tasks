@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #weather-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #city-input {
+            padding: 8px;
+            width: 60%;
+            margin-right: 10px;
+        }
+
+        #get-weather-btn {
+            padding: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="weather-container">
+        <h2>Weather App</h2>
+        <input type="text" id="city-input" placeholder="Enter city">
+        <button id="get-weather-btn">Get Weather</button>
+        <div id="weather-info"></div>
+    </div>
+
+    <script>
+        const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
+        const weatherInfo = document.getElementById('weather-info');
+        const cityInput = document.getElementById('city-input');
+        const getWeatherBtn = document.getElementById('get-weather-btn');
+
+        getWeatherBtn.addEventListener('click', () => {
+            const city = cityInput.value;
+            if (city) {
+                getWeather(city);
+            } else {
+                alert('Please enter a city.');
+            }
+        });
+
+        function getWeather(city) {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    displayWeather(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    weatherInfo.innerHTML = 'Error fetching weather data. Please try again.';
+                });
+        }
+
+        function displayWeather(data) {
+            const { name, main, weather } = data;
+            const temperature = main.temp;
+            const description = weather[0].description;
+
+            const weatherHtml = `
+                <h3>${name}</h3>
+                <p>Temperature: ${temperature} &#8451;</p>
+                <p>Description: ${description}</p>
+            `;
+
+            weatherInfo.innerHTML = weatherHtml;
+        }
+    </script>
+</body>
+</html>

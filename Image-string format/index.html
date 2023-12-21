@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to String Conversion</title>
+</head>
+<body>
+  <input type="file" id="imageInput" accept="image/*">
+  <br>
+  <img id="outputImage" alt="Converted Image">
+  <br>
+  <textarea id="outputString" rows="10" cols="30" readonly></textarea>
+
+  <script>
+    document.getElementById('imageInput').addEventListener('change', handleImage);
+
+    function handleImage(e) {
+      const input = e.target;
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            // Get image data as an array
+            const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+
+            // Convert image data to a string
+            const imageString = arrayBufferToString(imageData);
+
+            // Display the converted image
+            document.getElementById('outputImage').src = e.target.result;
+
+            // Display the converted string
+            document.getElementById('outputString').value = imageString;
+          };
+
+          img.src = e.target.result;
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function arrayBufferToString(buffer) {
+      const uint8Array = new Uint8Array(buffer);
+      return String.fromCharCode.apply(null, uint8Array);
+    }
+  </script>
+</body>
+</html>
